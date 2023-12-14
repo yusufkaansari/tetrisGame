@@ -1,10 +1,11 @@
 using UnityEngine;
+using UnityEngine.Scripting.APIUpdating;
 
 public class Piece : MonoBehaviour
 {
     public Board board {  get; private set; }
     public TetrominoData data { get; private set; }
-    public Vector3Int position { get; private set; }
+    public Vector3Int position { get; private set; } // spawn position
     public Vector3Int[] cells { get; private set; }
     public void Initialize(Board board, Vector3Int position, TetrominoData data)
     {
@@ -19,5 +20,31 @@ public class Piece : MonoBehaviour
         {
             this.cells[i] = (Vector3Int)data.cells[i];
         }
+    }
+    private void Update()
+    {
+        this.board.Clear(this);
+        if (Input.GetKeyDown(KeyCode.A))
+        {
+            Move(Vector2Int.left);
+        } else if (Input.GetKeyDown(KeyCode.D))
+        {
+            Move(Vector2Int.right);
+        }
+        this.board.Set(this);
+    }
+    private bool Move(Vector2Int translation)
+    {
+        Vector3Int newPosition = this.position;
+        newPosition.x += translation.x;
+        newPosition.y += translation.y;
+
+        bool valid = this.board.IsValidPosition(this,newPosition);
+
+        if (valid)
+        {
+            this.position = newPosition;
+        }
+        return valid;
     }
 }
